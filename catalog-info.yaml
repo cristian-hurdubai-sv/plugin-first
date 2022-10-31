@@ -11,4 +11,4 @@ spec:
   owner: cristian.hurdubai@softvision.com
   lifecycle: experimental
   dependsOn:
-    - first-backend-plugin
+    - api:first-backend-plugin
