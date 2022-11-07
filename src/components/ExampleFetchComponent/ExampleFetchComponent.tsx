@@ -23,7 +23,7 @@ type DenseTableProps = {
   users: RandomUserItem[];
 };
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 30;
 
 export const DenseTable = ({ users }: DenseTableProps) => {
   const classes = useStyles();
@@ -71,8 +71,20 @@ export const DenseTable = ({ users }: DenseTableProps) => {
 };
 
 export const ExampleFetchComponent = () => {
+  const { value, loading, error } = getApiData();
+
+  if (loading) {
+    return <Progress />;
+  } else if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  }
+
+  return <DenseTable users={value?.data || []} />;
+};
+
+export const getApiData = () => {
   const firstApi = useApi(firstApiRef);
-  const { value, loading, error } = useAsync(async () => {
+  return useAsync(async () => {
     const searchParams = new URLSearchParams(window.location.search);
     const query: any = {};
     // Display the key/value pairs
@@ -88,7 +100,7 @@ export const ExampleFetchComponent = () => {
       const pageSize = query?.pageSize ?? PAGE_SIZE;
       result = await firstApi.getAll({
         offset: page * pageSize,
-        limit: pageSize,
+        limit: 10000, // pageSize,
         orderBy:
           query?.orderBy &&
           ({
@@ -108,12 +120,4 @@ export const ExampleFetchComponent = () => {
       page: Math.floor(result.offset / result.limit),
     };
   }, []);
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
-
-  return <DenseTable users={value?.data || []} />;
-};
+}
